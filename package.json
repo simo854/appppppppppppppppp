@@ -1,0 +1,29 @@
+{
+  "name": "viewmax-api",
+  "version": "1.0.0",
+  "description": "ViewMax streaming platform API",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "build": "echo 'No build step required'",
+    "test": "echo 'No tests specified'"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "compression": "^1.7.4",
+    "express-rate-limit": "^7.1.5"
+  },
+  "keywords": [
+    "streaming",
+    "movies",
+    "series",
+    "api",
+    "viewmax"
+  ],
+  "author": "ViewMax",
+  "license": "MIT"
+}
