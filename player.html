@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ViewMax - Watch Movies & TV Shows Online Free</title>
+
+
+
+    <!-- Windows Tiles -->
+    <meta name="msapplication-square70x70logo" content="/icons/icon-70x70.png">
+    <meta name="msapplication-square150x150logo" content="/icons/icon-150x150.png">
+    <meta name="msapplication-wide310x150logo" content="/icons/icon-310x150.png">
+    <meta name="msapplication-square310x310logo" content="/icons/icon-310x310.png">
+
+    <!-- Preload Critical Resources -->
+    <link rel="preload" href="/css/style.css" as="style">
+    <link rel="preload" href="/css/header.css" as="style">
+    <link rel="preload" href="/css/HandF.css" as="style">
+    <link rel="preload" href="/scriptsAll/new.js" as="script">
+    <link rel="preload" href="/scriptsAll/pwa-manager.js" as="script">
+
+    <!-- CryptoJS Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!--header and footer style-->
+    <link rel="stylesheet" href="css/all.min.css">
+    <link rel="stylesheet" href="css/in.css">
+    <link rel="stylesheet" href="css/header.css">
+
+    <style>
+        /* Simple Player Styles */
+        #player {
+            width: 100%;
+            height: 500px;
+            background: #000;
+            border-radius: 20px;
+            margin: 20px 0;
+            overflow: hidden;
+            position: relative;
+        }
+
+        #player iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 20px;
+        }
+
+        #player-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        #player-buttons button {
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            font-size: 14px;
+            min-width: 100px;
+        }
+
+        #player-buttons button:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        #player-buttons button.active {
+            background: rgb(255, 104, 3) !important;
+            color: white !important;
+            border: 2px solid #ff6803 !important;
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(255, 104, 3, 0.4);
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            #player {
+                height: 300px;
+            }
+
+            #player-buttons button {
+                padding: 10px 18px;
+                font-size: 12px;
+                min-width: 80px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            #player {
+                height: 250px;
+            }
+
+            #player-buttons button {
+                padding: 8px 14px;
+                font-size: 11px;
+                min-width: 70px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header id="header">
+        <div class="header-container">
+            <div class="logo">
+                <div class="hamburger" id="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+                <a href="Home.html" class="logo-link">
+                    <img src="images/imdb/logo.png" alt="ViewMax Logo" loading="lazy">
+                    ViewMax
+                </a>
+            </div>
+
+            <nav class="main-nav" id="mainNav">
+                <ul>
+                    <li><a href="Home.html" class="active">Home</a></li>
+                    <li><a href="trending.html">Trending</a></li>
+                    <li><a href="movies.html">Movies</a></li>
+                    <li><a href="series.html">Series</a></li>
+                    <li><a href="imdb.html">Top Rated</a></li>
+                </ul>
+            </nav>
+
+            <div class="search-container" id="searchContainer">
+                <input type="text" class="search-input" id="searchInput" placeholder="Search movies, series..."
+                    autocomplete="off">
+                <div class="search-icon" id="searchToggle">
+                    <i class="fas fa-search"></i>
+                </div>
+                <ul id="suggestionsList" class="suggestions-list"></ul>
+            </div>
+
+            <!-- Mobile Search Icon -->
+            <div class="mobile-search-toggle" id="mobileSearchToggle">
+                <i class="fas fa-search"></i>
+            </div>
+        </div>
+
+        <!-- Mobile Search Bar -->
+        <div class="mobile-search-bar" id="mobileSearchBar">
+            <div class="mobile-search-container">
+                <input type="text" class="mobile-search-input" id="mobileSearchInput"
+                    placeholder="Search movies, series..." autocomplete="off">
+                <div class="mobile-search-close" id="mobileSearchClose">
+                    <i class="fas fa-times"></i>
+                </div>
+            </div>
+            <ul id="mobileSuggestionsList" class="mobile-suggestions-list"></ul>
+        </div>
+    </header>
+
+    <div class="box-player ">
+
+        <div class="container">
+            <div class="info-movie">
+                <div class="image">
+                    <img id="movie-image" style="width: 300px; height: auto; margin-bottom: 10px;" />
+                </div>
+                <div class="box-info">
+                    <h2 id="movie-title" style="margin-right: 20px;margin-bottom:15px;"></h2>
+                    <p>
+                        <strong>Genre:</strong>
+                        <span id="movie-genre"> </span>
+                    </p>
+                    <p>
+                        <strong>description:</strong>
+                        <span id="movie-description"> </span>
+                    </p>
+                    <p><strong>IMDb Rating:</strong> <span id="movie-rating"></span></p>
+                    <p><strong>Release Date:</strong> <span id="movie-release"></span></p>
+                </div>
+                <button class="trailer"><i class="fa-solid fa-video"></i> Trailer</button>
+            </div>
+            <div id="player-buttons">
+                <button onclick="changeSource(1)" class="active">Server 1</button>
+                <button onclick="changeSource(2)">Server 2</button>
+                <button onclick="changeSource(3)">Server 3</button>
+            </div>
+            <div id="player"></div>
+
+        </div>
+
+
+
+        <div class="main-suggestions">
+            <h3>suggestions :</h3>
+            <div id="suggestions" style="display: flex; gap: 20px;"></div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>ViewMax</h3>
+                <p>Your ultimate destination for movies and TV shows. Stream unlimited content with the best quality and
+                    experience.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="Home.html">Home</a></li>
+                    <li><a href="trending.html">Trending</a></li>
+                    <li><a href="imdb.html">Top Rated</a></li>
+                    <li><a href="#">About Us</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Categories</h4>
+                <ul>
+                    <li><a href="#">Movies</a></li>
+                    <li><a href="#">TV Series</a></li>
+                    <li><a href="#">Documentaries</a></li>
+                    <li><a href="#">Anime</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Follow Us</h4>
+                <div class="social-links">
+                    <a href="#" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
+                    <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                    <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 ViewMax Company. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Security and Protection -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+<script src="scriptsAll/dataProtection.js"></script>
+
+<!-- Main Scripts -->
+<script src="scriptsAll/meta-integration.js"></script>
+<script src="scriptsAll/security-config.js"></script>
+<script src="scriptsAll/new.js"></script>
+<script src="scriptsAll/ne.js"></script>
+
+<!-- Additional Protection -->
+<script src="scriptsAll/console-silencer.js"></script>
+    
+    <!-- Initialize Hamburger Menu -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const hamburger = document.getElementById('hamburger');
+            const mainNav = document.getElementById('mainNav');
+            const navOverlay = document.createElement('div');
+            navOverlay.id = 'navOverlay';
+            document.body.appendChild(navOverlay);
+
+            function toggleMenu() {
+                hamburger.classList.toggle('active');
+                mainNav.classList.toggle('active');
+                navOverlay.classList.toggle('active');
+                
+                if (mainNav.classList.contains('active')) {
+                    document.body.style.overflow = 'hidden';
+                } else {
+                    document.body.style.overflow = '';
+                }
+            }
+
+            function closeMenu() {
+                hamburger.classList.remove('active');
+                mainNav.classList.remove('active');
+                navOverlay.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+
+            hamburger.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                toggleMenu();
+            });
+
+            navOverlay.addEventListener('click', closeMenu);
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && mainNav.classList.contains('active')) {
+                    closeMenu();
+                }
+            });
+
+            // Close menu on window resize (mobile to desktop)
+            window.addEventListener('resize', () => {
+                if (window.innerWidth > 768 && mainNav.classList.contains('active')) {
+                    closeMenu();
+                }
+            });
+        });
+    </script>
+
+
+
+
+
+</body>
+
+</html>

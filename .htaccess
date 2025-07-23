@@ -1,0 +1,37 @@
+# Block direct access to all JSON files
+<Files "*.json">
+    Order Allow,Deny
+    Deny from all
+</Files>
+
+# Alternative method for newer Apache versions
+<FilesMatch "\.json$">
+    Require all denied
+</FilesMatch>
+
+# Block access to sensitive directories
+<Directory "scriptsAll/embedded">
+    Order Allow,Deny
+    Deny from all
+</Directory>
+
+# Security headers
+Header always set X-Content-Type-Options nosniff
+Header always set X-Frame-Options DENY
+Header always set X-XSS-Protection "1; mode=block"
+Header always set Referrer-Policy "strict-origin-when-cross-origin"
+
+# Prevent directory browsing
+Options -Indexes
+
+# Block common hacking attempts
+<Files "wp-config.php">
+    Order Allow,Deny
+    Deny from all
+</Files>
+
+# Block access to backup files
+<FilesMatch "\.(bak|backup|old|tmp)$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
